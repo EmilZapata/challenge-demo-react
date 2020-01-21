@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { connect } from 'react-redux'
+import { connect, useSelector, useDispatch } from 'react-redux'
 import { loadMangeList  } from '../../redux/actions'
 import {
   Switch,
@@ -15,50 +15,87 @@ import { TitleSection } from '../../components'
 import ManageKeyList from './manage-list'
 import ManageKeyDetail from './manage-detail'
 import ManageKeyEdit from './manage-edit'
+import { bindActionCreators } from 'redux'
 
-class Manage extends React.Component {
 
-	componentDidMount() {
-		const { manageList, onLoadMangeList } = this.props;
+const Manage = (props) => {
+ //Initial Dispatch config
+ const dispatch = useDispatch();
 
-		// API call
-		if (manageList.data.length === 0) onLoadMangeList()
-	}
+ const manageActionOperation = useMemo(() => {
+   return bindActionCreators({loadMangeList}, dispatch);
+ }, [dispatch]);
 
-	render() {
+const manageList = useSelector(state => state.manageList)
 
-		return (
-			<React.Fragment>
-				<Helmet> <title>Manage | Code Challenge </title> </Helmet>
-				<TitleSection title="Manage data" />
-				<Grid container spacing={3} >
-					<Grid item xs={12} sm={12} md={4} lg={3} >
-						<ManageKeyList/>
-					</Grid>
-					<Grid item xs={12} sm={12} md={8} lg={9} >
-						<Switch>
-				      <Route exact path="/manage" component={ManageKeyDetail} />
-				      <Route exact path="/manage/edit" component={ManageKeyEdit} />
-				    </Switch>
-					</Grid>
-				</Grid>
-			</React.Fragment>
-		)
-	}
+useEffect(() => {
+	if (manageList.data.length === 0) manageActionOperation.loadMangeList()
+	// manageActionOperation.loadMangeList()
+},[])
+
+return (
+	<React.Fragment>
+		<Helmet> <title>Manage | Code Challenge </title> </Helmet>
+		<TitleSection title="Manage data" />
+		<Grid container spacing={3} >
+			<Grid item xs={12} sm={12} md={4} lg={3} >
+				<ManageKeyList/>
+			</Grid>
+			<Grid item xs={12} sm={12} md={8} lg={9} >
+				<Switch>
+			  <Route exact path="/manage" component={ManageKeyDetail} />
+			  <Route exact path="/manage/edit" component={ManageKeyEdit} />
+			</Switch>
+			</Grid>
+		</Grid>
+	</React.Fragment>
+)
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-  	onLoadMangeList() {
-  		dispatch(loadMangeList())
-  	},
-  }
-}
+// class Manage extends React.Component {
 
-const mapStateToProps = ({
-  manageList,
-}) => ({
-  manageList,
-})
+// 	componentDidMount() {
+// 		const { manageList, onLoadMangeList } = this.props;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Manage)
+// 		// API call
+// 		if (manageList.data.length === 0) onLoadMangeList()
+// 	}
+
+// 	render() {
+
+// 		return (
+// 			<React.Fragment>
+// 				<Helmet> <title>Manage | Code Challenge </title> </Helmet>
+// 				<TitleSection title="Manage data" />
+// 				<Grid container spacing={3} >
+// 					<Grid item xs={12} sm={12} md={4} lg={3} >
+// 						<ManageKeyList/>
+// 					</Grid>
+// 					<Grid item xs={12} sm={12} md={8} lg={9} >
+// 						<Switch>
+// 				      <Route exact path="/manage" component={ManageKeyDetail} />
+// 				      <Route exact path="/manage/edit" component={ManageKeyEdit} />
+// 				    </Switch>
+// 					</Grid>
+// 				</Grid>
+// 			</React.Fragment>
+// 		)
+// 	}
+// }
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//   	onLoadMangeList() {
+//   		dispatch(loadMangeList())
+//   	},
+//   }
+// }
+
+// const mapStateToProps = ({
+//   manageList,
+// }) => ({
+//   manageList,
+// })
+
+// export default connect(mapStateToProps, mapDispatchToProps)(Manage)
+export default Manage
